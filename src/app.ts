@@ -11,9 +11,19 @@ const projects = {};
 class ProjectInput {
   templateElement: HTMLTemplateElement;
   hostElement: HTMLDivElement;
+  element: HTMLFormElement;
+
   constructor(){
     this.templateElement = document.getElementById('project-input')! as HTMLTemplateElement;
     this.hostElement = document.getElementById('app')! as HTMLDivElement;
+
+    const importedNode = document.importNode(this.templateElement, true);
+    this.element = importedNode.firstElementChild as HTMLFormElement;
+    this.attach()
+  }
+
+  private attach (){
+    this.hostElement.insertAdjacentElement('afterbegin',this.element);
   }
 }
 
@@ -30,12 +40,8 @@ class Project {
 
 }
 
-const fence = new Project('Repair Fence', 'Build a new back fence', 2);
+const project = new ProjectInput();
+project.renderForm();
 
-console.log(fence.title);
-
-
-// const temp = document.getElementById('project-input');
-// console.log(temp);
-// const clon = temp.content.cloneNode(true);
-// document.body.appendChild(clon);
+// const fence = new Project('Repair Fence', 'Build a new back fence', 2);
+// console.log(fence.title);
