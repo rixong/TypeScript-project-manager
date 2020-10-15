@@ -8,6 +8,19 @@ number of people
 
 const projects: Project[] = [];
 
+function Autobind(_: any, _2: string, descriptor: PropertyDescriptor){
+  const originalMethod = descriptor.value;
+  const modifiedMethod = {
+    configurable: true,
+    enumerable: false,
+    get() {
+      const boundFn = originalMethod.bind(this);
+      return boundFn
+    }
+  };
+  return modifiedMethod;
+}
+
 class ProjectInput {
   templateElement: HTMLTemplateElement;
   hostElement: HTMLDivElement;
@@ -31,15 +44,15 @@ class ProjectInput {
     this.configure();
     this.attach();
   }
-
+  
+  @Autobind
   private submitHandler(event: Event){
     event.preventDefault();
     console.log(this.titleInputElement.value);
-    
   }
-
   private configure(){
-    this.element.addEventListener('submit', this.submitHandler.bind(this))
+    // this.element.addEventListener('submit', this.submitHandler.bind(this))
+    this.element.addEventListener('submit', this.submitHandler)
   }
 
   private attach (){
