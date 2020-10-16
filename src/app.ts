@@ -1,20 +1,6 @@
 
-
-
-class Project {
-  title: string;
-  description: string;
-  numPeople: number
-
-  constructor(title: string, description: string, numPeople: number) {
-    this.title = title;
-    this.description = description;
-    this.numPeople = numPeople;
-  }
-}
-
 class ProjectState {
-
+  private listeners: any[] = []
   private projects: any[] = [];
   private static instance: ProjectState;
 
@@ -38,12 +24,21 @@ class ProjectState {
       people
     };
     this.projects.push(newProject);
+    for(const listenerFn of this.listeners){
+      listenerFn(this.projects.slice());
+    }
   }
+
+  addListener(listenerFn: Function) {
+    this.listeners.push(listenerFn)
+  }
+
+
 }
 
 const projectState = ProjectState.getInstance();
 
-
+//UTILITES
 interface Validatable {
   value: string | number;
   required?: boolean;
@@ -104,19 +99,37 @@ class ProjectList {
   templateElement: HTMLTemplateElement;
   hostElement: HTMLDivElement;
   element: HTMLElement;
+  assignedProjects: any[];
 
   constructor(private type: 'active' | 'finished') {
+
     this.templateElement = document.getElementById(
       'project-list'
     )! as HTMLTemplateElement;  //gets the template
     this.hostElement = document.getElementById('app')! as HTMLDivElement; //gets the app container
+    this.assignedProjects = [];
     const importedNode = document.importNode(this.templateElement.content, true);
     this.element = importedNode.firstElementChild as HTMLElement;
     this.element.id = `${this.type}-projects`;
 
+    projectState.addListener((projects: any[]) => {
+      this.assignedProjects = projects;
+      this.renderProjects();
+    });
+
     this.attach();
     this.renderContent();
+  }
 
+  private renderProjects(){
+    // console.log(this.assignedProjects);
+    const listEl = document.getElementById(`${this.type}-projects-list`)! as HTMLUListElement;
+    listEl.innerHTML = '';
+    for (const prjItem of this.assignedProjects) {
+      const listItem = document.createElement('li');
+      listItem.textContent = prjItem.title;
+      listEl.appendChild(listItem);
+    }
   }
 
   private renderContent() {
