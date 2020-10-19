@@ -1,5 +1,3 @@
-namespace App {
-
   //PROJECT BASE COMPONENT CLASS
 
   export abstract class Component<T extends HTMLElement, U extends HTMLElement> {
@@ -36,6 +34,3 @@ namespace App {
     abstract renderContent(): void
   
   }
-
-
-}
